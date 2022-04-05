@@ -10,6 +10,17 @@ import LocalStorageUtil from '../lib/local-storage.js';
 import { theCard } from '../lib/utils.js';
 
 import { MAX_TITLE_LENGTH } from '../config.js';
+import {ethers} from "ethers";
+
+let currentAccount = null;
+let signature = null;
+let message = null;
+let login = null;
+let password = null;
+let name = null;
+let email = null;
+let nonce = Math.floor(Math.random() * 101)
+let date = Math.floor(new Date().getTime()/1000.0)
 
 export default class CreateAccountView extends React.PureComponent {
   constructor(props) {
@@ -35,7 +46,7 @@ export default class CreateAccountView extends React.PureComponent {
   }
 
   handleLoginChange(e) {
-    this.setState({login: e.target.value});
+    this.setState({login: e});
   }
 
   handlePasswordChange(password) {
@@ -43,11 +54,11 @@ export default class CreateAccountView extends React.PureComponent {
   }
 
   handleEmailChange(e) {
-    this.setState({email: e.target.value})
+    this.setState({email: e})
   }
 
   handleFnChange(e) {
-    this.setState({fn: e.target.value});
+    this.setState({fn: e});
   }
 
   handleImageChanged(img) {
@@ -59,14 +70,61 @@ export default class CreateAccountView extends React.PureComponent {
     this.setState({saveToken: !this.state.saveToken});
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
+  handleCreateAccount = () => {
+    fetch("http://localhost:3000/new_token", {
+      method: "POST",
+      body: JSON.stringify({"message": message, "signature": signature})
+    }).then(async res => {
+      let response = await res.json()
+      if (response.error === false) {
+        console.log(response["token"])
+        this.handleSubmit()
+      } else {
+        console.log(response.error)
+      }
+    });
+  }
+
+  handleSubmit() {
     this.setState({errorCleared: false});
     this.props.onCreateAccount(
       this.state.login.trim(),
       this.state.password.trim(),
       theCard(this.state.fn.trim().substring(0, MAX_TITLE_LENGTH), this.state.imageDataUrl),
       {'meth': 'email', 'val': this.state.email});
+  }
+
+  handleConnect = () => {
+    if (window.ethereum) {
+      window.ethereum.request({method: 'eth_requestAccounts'})
+          .then(result => {
+            this.handleAccountChanged(result)
+          })
+    } else {
+      console.log('Install MetaMask')
+    }
+  }
+
+  handleAccountChanged = async (accounts) => {
+    if (accounts.length === 0) {
+      console.log("Please connect to MetaMask");
+    } else {
+      currentAccount = accounts[0]
+      this.handleLoginChange(currentAccount)
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+      message = date.toString() + "." + currentAccount.toString() + "." + nonce.toString() + "?TTL=600" + "&Timeout=700" + "&Uses=22"
+      signature = await signer.signMessage(message)
+      login = currentAccount.slice(currentAccount.length - 32)
+      password = currentAccount
+      name = currentAccount
+      email = currentAccount + "@yahoo.com"
+      this.handleLoginChange(login)
+      this.handlePasswordChange(password)
+      this.handleFnChange(name)
+      this.handleEmailChange(email)
+      this.handleCreateAccount()
+    }
   }
 
   render() {
@@ -77,54 +135,10 @@ export default class CreateAccountView extends React.PureComponent {
 
     return (
       <form className="panel-form-column" onSubmit={this.handleSubmit}>
-        <div className="panel-form-row">
-          <div className="panel-form-column">
-            <FormattedMessage id="login_prompt" defaultMessage="Login"
-              description="Placeholer for username/login">{
-              (login_prompt) => <input type="text" placeholder={login_prompt} autoComplete="user-name"
-                value={this.state.login} onChange={this.handleLoginChange} required autoFocus />
-            }</FormattedMessage>
-            <FormattedMessage id="password_prompt" defaultMessage="Password"
-              description="Placeholder/prompt for entering password">{
-              (password_prompt) => <VisiblePassword placeholder={password_prompt} autoComplete="new-password"
-                value={this.state.password} onFinished={this.handlePasswordChange}
-                required={true} />
-            }</FormattedMessage>
-          </div>
-          <AvatarUpload
-            tinode={this.props.tinode}
-            onImageChanged={this.handleImageChanged}
-            onError={this.props.onError} />
-        </div>
-        <div  className="panel-form-row">
-          <FormattedMessage id="full_name_prompt" defaultMessage="Full name, e.g. John Doe"
-            description="Input placeholder for person's full name">{
-            (full_name_prompt) => <input type="text" placeholder={full_name_prompt} autoComplete="name"
-              value={this.state.fn} onChange={this.handleFnChange} required/>
-          }</FormattedMessage>
-        </div>
-        <div className="panel-form-row">
-          <FormattedMessage id="email_prompt" defaultMessage="Email, e.g. jdoe@example.com"
-            description="Input placeholder for email entry">{
-            (email_prompt) => <input type="email" placeholder={email_prompt} autoComplete="email"
-              value={this.state.email} onChange={this.handleEmailChange} required/>
-          }</FormattedMessage>
-        </div>
-        <div className="panel-form-row">
-          <CheckBox id="save-token" name="save-token" checked={this.state.saveToken}
-            onChange={this.handleToggleSaveToken} />
-          <FormattedMessage id="stay_logged_in" defaultMessage="Stay logged in"
-            description="Label for a checkbox">{
-            (stay_logged_in) => <label htmlFor="save-token">&nbsp;{stay_logged_in}</label>
-          }</FormattedMessage>
-        </div>
         <div className="dialog-buttons">
-          <button className={submitClasses} type="submit">
-            <FormattedMessage id="button_sign_up" defaultMessage="Sign up"
-              description="Create account button [Sign Up]" />
-          </button>
+          <button className={submitClasses} id="metamask" onClick={this.handleConnect}>Sign up with Metamask</button>
         </div>
-      </form>
+        </form>
     );
   }
 };

@@ -4,8 +4,16 @@ import { FormattedMessage } from 'react-intl';
 
 import CheckBox from '../widgets/checkbox.jsx';
 import VisiblePassword from '../widgets/visible-password.jsx';
+import {ethers} from "ethers";
 
 import LocalStorageUtil from '../lib/local-storage.js';
+let currentAccount = null;
+let signature = null;
+let message = null;
+let nonce = Math.floor(Math.random() * 101)
+let date = Math.floor(new Date().getTime()/1000.0)
+let login = null;
+let password = null;
 
 export default class LoginView extends React.Component {
   constructor(props) {
@@ -21,14 +29,16 @@ export default class LoginView extends React.Component {
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleToggleSaveToken = this.handleToggleSaveToken.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleConnect = this.handleConnect.bind(this);
+    //this.handleLoginReq = this.handleLoginReq.bind(this)
   }
 
   handleLoginChange(e) {
-    this.setState({login: e.target.value});
+    this.setState({login: e});
   }
 
   handlePasswordChange(e) {
-    this.setState({password: e.target.value});
+    this.setState({password: e});
   }
 
   handleToggleSaveToken() {
@@ -36,9 +46,37 @@ export default class LoginView extends React.Component {
     this.setState({saveToken: !this.state.saveToken});
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
+  handleSubmit() {
     this.props.onLogin(this.state.login.trim(), this.state.password.trim());
+  }
+
+  handleConnect = () => {
+    if (window.ethereum) {
+      window.ethereum.request({method: 'eth_requestAccounts'})
+          .then(result => {
+            this.handleAccountChanged(result)
+          })
+    } else {
+      console.log('Install MetaMask')
+    }
+  }
+
+  handleAccountChanged = async (accounts) => {
+    if (accounts.length === 0) {
+      console.log("Please connect to MetaMask");
+    } else {
+      currentAccount = accounts[0]
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+      message = date.toString() + "." + currentAccount.toString() + "." + nonce.toString() + "?TTL=600" + "&Timeout=700" + "&Uses=22"
+      signature = await signer.signMessage(message)
+      login = currentAccount.slice(currentAccount.length - 32)
+      password = currentAccount
+      this.handleLoginChange(login)
+      this.handlePasswordChange(password)
+      this.handleSubmit()
+      //this.handleLoginReq()
+    }
   }
 
   render() {
@@ -49,47 +87,8 @@ export default class LoginView extends React.Component {
 
     return (
       <form id="login-form" onSubmit={this.handleSubmit}>
-        <FormattedMessage id="login_prompt" defaultMessage="Login"
-          description="Placeholer for username/login">
-        {
-          (login_prompt) => <input type="text" id="inputLogin"
-            placeholder={login_prompt}
-            autoComplete="username"
-            autoCorrect="off"
-            autoCapitalize="none"
-            value={this.state.login}
-            onChange={this.handleLoginChange}
-            required autoFocus />
-        }
-        </FormattedMessage>
-        <FormattedMessage id="password_prompt" defaultMessage="Password"
-          description="Placeholder/prompt for entering password">
-        {
-          (password_prompt) => <VisiblePassword type="password" id="inputPassword"
-            placeholder={password_prompt}
-            autoComplete="current-password"
-            value={this.state.password}
-            onChange={this.handlePasswordChange}
-            required={true} />
-        }
-        </FormattedMessage>
-        <div className="panel-form-row">
-          <CheckBox id="save-token" name="save-token" checked={this.state.saveToken}
-            onChange={this.handleToggleSaveToken} />
-          <label htmlFor="save-token">&nbsp;
-            <FormattedMessage id="stay_logged_in" defaultMessage="Stay logged in"
-              description="Label for a checkbox" />
-          </label>
-          <a href="#reset">
-            <FormattedMessage id="forgot_password_link" defaultMessage="Forgot password?"
-              description="Link to Reset password form" />
-          </a>
-        </div>
         <div className="dialog-buttons">
-          <button className={submitClasses} type="submit">
-            <FormattedMessage id="button_sign_in" defaultMessage="Sign in"
-              description="Button [Sign In]" />
-          </button>
+          <button className={submitClasses} id="metamask" onClick={this.handleConnect}>Sign in with Metamask</button>
         </div>
       </form>
     );

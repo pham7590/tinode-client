@@ -103,14 +103,6 @@
     "defaultMessage": "Send request",
     "description": "Button [Send request]"
   },
-  "button_sign_in": {
-    "defaultMessage": "Sign in",
-    "description": "Button [Sign In]"
-  },
-  "button_sign_up": {
-    "defaultMessage": "Sign up",
-    "description": "Create account button [Sign Up]"
-  },
   "button_subscribe": {
     "defaultMessage": "Subscribe",
     "description": "Button [Subscribe]"
@@ -207,10 +199,6 @@
     "defaultMessage": "email",
     "description": "Dative case of 'email', i.e. 'email' in 'by email'"
   },
-  "email_prompt": {
-    "defaultMessage": "Email, e.g. jdoe@example.com",
-    "description": "Input placeholder for email entry"
-  },
   "enable_peers_messaging": {
     "defaultMessage": "Enable",
     "description": "Call to action to enable peer's messaging"
@@ -226,10 +214,6 @@
   "file_attachment_too_large": {
     "defaultMessage": "The file size {size} exceeds the {limit} limit.",
     "description": "Error message when attachment is too large"
-  },
-  "forgot_password_link": {
-    "defaultMessage": "Forgot password?",
-    "description": "Link to Reset password form"
   },
   "forward_to": {
     "defaultMessage": "Forward to"
@@ -404,10 +388,6 @@
     "defaultMessage": "Terms of Service",
     "description": "Ancor text for terms of service link"
   },
-  "login_prompt": {
-    "defaultMessage": "Login",
-    "description": "Placeholer for username/login"
-  },
   "menu_item_archive_topic": {
     "defaultMessage": "Archive",
     "description": "Move topic from the list of active chats to archive"
@@ -539,10 +519,6 @@
   "panel_title_security": {
     "defaultMessage": "Security",
     "description": "Title for TopicSecirity and AccSecurity."
-  },
-  "password_prompt": {
-    "defaultMessage": "Password",
-    "description": "Placeholder/prompt for entering password"
   },
   "password_reset_email_sent": {
     "defaultMessage": "An email has been sent to {email}. Follow the directions in the email to reset your password.",
@@ -691,10 +667,6 @@
   "sidepanel_title_settings": {
     "defaultMessage": "Settings",
     "description": "Sidepanel title for SettingsView."
-  },
-  "stay_logged_in": {
-    "defaultMessage": "Stay logged in",
-    "description": "Label for a checkbox"
   },
   "tabtitle_find_user": {
     "defaultMessage": "find",

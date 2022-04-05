@@ -179,14 +179,14 @@
     "defaultMessage": "Sign in",
     "description": "Button [Sign In]",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "button_sign_up": {
     "translation": "Regístrate",
     "defaultMessage": "Sign up",
     "description": "Create account button [Sign Up]",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "button_subscribe": {
     "translation": "Suscribirse",
@@ -354,7 +354,7 @@
     "defaultMessage": "Email, e.g. jdoe@example.com",
     "description": "Input placeholder for email entry",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "enable_peers_messaging": {
     "translation": "Habilitar",
@@ -389,7 +389,7 @@
     "defaultMessage": "Forgot password?",
     "description": "Link to Reset password form",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "full_name_prompt": {
     "translation": "Nombre completo, p.ej. Juan González Hernández",
@@ -667,7 +667,7 @@
     "defaultMessage": "Login",
     "description": "Placeholer for username/login",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "menu_item_archive_topic": {
     "translation": "Archivar",
@@ -856,7 +856,7 @@
     "defaultMessage": "Password",
     "description": "Placeholder/prompt for entering password",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "password_unchanged_prompt": {
     "translation": "Sin cambios",
@@ -1094,7 +1094,7 @@
     "defaultMessage": "Stay logged in",
     "description": "Label for a checkbox",
     "missing": false,
-    "obsolete": false
+    "obsolete": true
   },
   "tabtitle_find_user": {
     "translation": "encontrar",
